@@ -54,7 +54,10 @@ public class AVL {
 			printInOrder(x.getRightNode());
 	}
 	
-	
+	public int calculateBf(Node node) {
+		if (node == null) return 0;
+		return getHeight(node.getLeftNode()) - getHeight(node.getRightNode());
+	}
 	
 	public void addNode(Node toAdd) {
 		if (root == null) {
@@ -65,24 +68,21 @@ public class AVL {
 	}
 	
 	public void addNode(Node aux, Node toAdd) {
-		//condição de parada
+		
 		if (toAdd.getData() > aux.getData()) {
 			if (aux.rightNode == null) {
 			  aux.rightNode = toAdd;
 			  toAdd.setDadNode(aux);
-			  System.out.println("Inseriu " + toAdd + " Altura do pai:" + getHeight(aux));
-
-			  return; //parada
 			} else addNode(aux.rightNode, toAdd);
 		}	
 		else {
 			if (aux.leftNode == null) {
 			  aux.leftNode = toAdd; 
-			  System.out.println("Inseriu " + toAdd + " Altura do pai:" + getHeight(aux));
-
-			  return; //parada
+			  toAdd.setDadNode(aux);
 			} else addNode(aux.leftNode, toAdd);
-		}	
+		}
+		//desempilhamento da recursão para todos os nós ancestrais
+		aux.setBf(calculateBf(aux));
 	}
 	
 	

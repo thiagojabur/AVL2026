@@ -2,311 +2,498 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AVL {
-	Node root;
-	List<Integer> aux = new ArrayList<>();
-	
-	public AVL(Node root) {
-		this.root = root;
-	}
-	
-	public int getSize() {
-		return getSize(root);
-	}
-	
-	public int getSize(Node x) {
-		//faz a varredura e retorna a quantidade de nós
-		if (x == null) 
-			return 0;
-			
-		return 1 + getSize(x.getLeftNode())
-				+ getSize(x.getRightNode()); 			
-	}
-	
-	public void printPosOrder() {
-		System.out.println("\nPost order");
-		printPosOrder(root);
-	}
-	public void printPosOrder(Node x) {
-		//Esquerda, Direita, Raiz
-		if (x == null) 
-			return;
-		
-			printPosOrder(x.getLeftNode());
-			printPosOrder(x.getRightNode());
-			System.out.print(x.getData() + " ");
 
-	}
-	
-	public void printInOrder() {
-		System.out.println("");
-		printInOrder(root);
-	}
-	
-	public void printInOrder(Node x) {
-		//Esquerda, Raiz, Direito
-		if (x == null) 
-			return;
-		
-			
-			printInOrder(x.getLeftNode());
-			System.out.print(x.getData() + " ");
-			aux.add(x.getData());
-			printInOrder(x.getRightNode());
-	}
-	
-	public int calculateBf(Node node) {
-		if (node == null) return 0;
-		return getHeight(node.getLeftNode()) - getHeight(node.getRightNode());
-	}
-	
-	public void addNode(Node toAdd) {
-		if (root == null) {
-			root = toAdd;
-		} else {
-			addNode(root,toAdd);
-		}	
-	}
-	
-	public void addNode(Node aux, Node toAdd) {
-		
-		if (toAdd.getData() > aux.getData()) {
-			if (aux.rightNode == null) {
-			  aux.rightNode = toAdd;
-			  toAdd.setDadNode(aux);
-			} else addNode(aux.rightNode, toAdd);
-		}	
-		else {
-			if (aux.leftNode == null) {
-			  aux.leftNode = toAdd; 
-			  toAdd.setDadNode(aux);
-			} else addNode(aux.leftNode, toAdd);
-		}
-		//desempilhamento da recursão para todos os nós ancestrais
-		aux.setBf(calculateBf(aux));
-	}
-	
-	
-	public void printPreOrder() {
-		System.out.println("Pre order");
-		printPreOrder(root);
-	}
-	
-	public void printPreOrder(Node x) {
-		//raiz primeiro, Esquerda, Direita
-		if (x == null) 
-			return;
-		
-			System.out.print(x.getData() + " ");
-			printPreOrder(x.getLeftNode());
-			printPreOrder(x.getRightNode());
-			
-	}
+    Node root;
+    List<Integer> aux = new ArrayList<>();
 
-	
-	public void listExternalNodes() {
-		listExternalNodes(root);
-	}
-	
-	public void listExternalNodes(Node x) {
-		//raiz primeiro, Esquerda, Direita
-		if (x == null) 
-			return;
-		
-			if (x.getLeftNode() == null && x.getRightNode() == null )
-				System.out.print(x.getData() + " ");
-			
-			listExternalNodes(x.getLeftNode());
-			listExternalNodes(x.getRightNode());
-			
-	}
-	
-	public void listInternalNodes() {
-		listInternalNodes(root);
-	}
-	
-	public void listInternalNodes(Node x) {
-		//raiz primeiro, Esquerda, Direita
-		if (x == null) 
-			return;
-		
-			if (x.getLeftNode() != null || x.getRightNode() != null )
-				System.out.print(x.getData() + " ");
-			
-			listInternalNodes(x.getLeftNode());
-			listInternalNodes(x.getRightNode());
-			
-	}
-	
-	public void delete(Node nodeToDelete) {
-		
-		//se tem dois filhos - ESSE que tá errado
-		if ((nodeToDelete.getLeftNode()!= null) && (nodeToDelete.getRightNode()!= null )) {
-			//subir o mais a direita da perna esquerda
-			nodeToDelete.getLeftNode().rightNode = nodeToDelete.getRightNode();
-			if (nodeToDelete == root)
-				root = nodeToDelete.getLeftNode();
-		}
-		
-		//se só perna para um lado
-		if ( (nodeToDelete.getLeftNode() == null && nodeToDelete.getRightNode()!= null) 
-				||
-			 (nodeToDelete.getRightNode() == null && nodeToDelete.getLeftNode()!= null)) 
-		{
-			//pai dadNode tem que ligar no filho dele na perna certa
-			
-			Node child;
-			if (nodeToDelete.getLeftNode() != null) {
-				child = nodeToDelete.getLeftNode();
-				nodeToDelete.dadNode.leftNode = child;	
-			}	
-			else {
-				System.out.println("Caiu aqui apagando " + nodeToDelete + " pai dele é " + nodeToDelete.dadNode);
-				child = nodeToDelete.getRightNode();
-				
-				nodeToDelete.dadNode.rightNode = child ;
-				
-				System.out.println(child);
-			}
-			
-			//se tiver tentando apagar a raiz
-			//o filho será a nova raiz e sai do método
-			if (nodeToDelete == root) {
-				child.dadNode = null;
-				root = child;
-				return;
-			}  
-				//child.dadNode = nodeToDelete.dadNode;  
-				return;
-	}
-				
-			
-			
-		
-		if(nodeToDelete == root && root.isExternal()) {
-		    root = null;
-		    return;
-		}
-		
-		//se não tem filho FUNCIONANDO
-		if (nodeToDelete.isExternal()) {
-			//achar o pai dele 
-			//ver se ele é nó esquerdo ou direito e essa perna fica null
-			if (nodeToDelete.dadNode.getLeftNode() == nodeToDelete) {
-				nodeToDelete.dadNode.leftNode = null;	
-			}	
-			else {
-				nodeToDelete.dadNode.rightNode = null;		
-			}
-			
-		}
-	}
-	
-	public boolean search(int valueToSearch) {	
-		return search(valueToSearch, root);
-	}
-	
+    public AVL(Node root) {
+        this.root = root;
+    }
 
-	private boolean search(int valor, Node x) {
-	    if (x == null) return false;
-	    if (valor == x.getData()) return true;
-	    return valor < x.getData() 
-	            ? search(valor, x.getLeftNode()) 
-	            : search(valor, x.getRightNode());
-	}	
-	
-	//- verificar se é estritamente binária (se tem 0 ou dois filhos função recursiva 
-	public boolean isStrictBinaryTree() {
-		return isStrictBinaryTree(root);
-	}
-	public boolean isStrictBinaryTree(Node x) {
+    public int getSize() {
+        return getSize(root);
+    }
 
-	    if (x == null)
-	        return true;
+    public int getSize(Node x) {
+        if (x == null)
+            return 0;
 
-	    if ((x.getLeftNode() == null && x.getRightNode() != null) ||
-	        (x.getLeftNode() != null && x.getRightNode() == null))
-	        return false;
+        return 1 + getSize(x.getLeftNode())
+                + getSize(x.getRightNode());
+    }
 
-	    return isStrictBinaryTree(x.getLeftNode())
-	            && isStrictBinaryTree(x.getRightNode());
-	}
-	public int getRoot() {
-		return root == null ? null : root.getData();
-	}
-	
-	public int depth (Node x) {
-		  // calculo da profundidade do no x
-		  if(x == root) 
-		    return 0;
-		  
-		  return 1 + depth(x.dadNode);
-	}
-	
-	public int getHeight () {
-		return getHeight(root); 
-	}
-	//encontra altura da árvore
-	//Se v é um no externo, então a altura de v  é 0.
-	//Caso contrário, a altura de v é um mais a altura máxima dos filhos de v.
-	//A altura total de uma árvore T é definida como a altura da raiz de T.
+    public void printPosOrder() {
+        System.out.println("\nPost order");
+        printPosOrder(root);
+    }
 
-	
-	public int getHeight (Node aux) {
-	    if (aux == null) {
-	        return -1;
-	    } else 
-	    	return Math.max(getHeight(aux.getLeftNode()), 
-	    			getHeight(aux.getRightNode()))+1;  
-	}
+    public void printPosOrder(Node x) {
+        if (x == null)
+            return;
 
-	public boolean isPerfectBalanced() {
-		return isPerfectBalanced(root);
-	}
-	
-	public boolean isPerfectBalanced(Node v) {
-		//Condição de parada
-		if (v == null) 
-			return true;
-		
-		int bf = getSize(v.getLeftNode()) - getSize(v.getRightNode());
-		
-		return (Math.abs(bf)) <= 1 
-				&& isPerfectBalanced(v.getLeftNode()) 
-				&& isPerfectBalanced(v.getRightNode());
-	
-	}
-	
-	public boolean isBinarySearchTree() {
-		 this.aux.clear();
-		 printInOrder();
-		 
-		 for (int i=0; i<this.aux.size()-1; i++) {
-			 if (aux.get(i) > aux.get(i+1)) {
-				 
-				 this.aux.clear();
-				 return false;
-			 }	 
-		 }
-		 this.aux.clear();
-		 return true;
-		
-	}
+        printPosOrder(x.getLeftNode());
+        printPosOrder(x.getRightNode());
+        System.out.print(x.getData() + " ");
+    }
 
-	
-	public boolean isBalanced() {
-		return isBalanced(root);
-	}
-	
-	public boolean isBalanced(Node v) {
-		if (v == null) 
-			return true;
-		
-		int bf = getHeight(v.getLeftNode()) - getHeight(v.getRightNode());
-		
-		return (Math.abs(bf)) <= 1 
-				&& isBalanced(v.getLeftNode()) 
-				&& isBalanced(v.getRightNode());
-	}
-	
+    public void printInOrder() {
+        System.out.println("");
+        printInOrder(root);
+    }
 
+    public void printInOrder(Node x) {
+        if (x == null)
+            return;
+
+        printInOrder(x.getLeftNode());
+        System.out.print(x.getData() + " ");
+        aux.add(x.getData());
+        printInOrder(x.getRightNode());
+    }
+
+    public int calculateBF(Node node) {
+
+        if (node == null)
+            return 0;
+
+        int bf = getHeight(node.getLeftNode())
+                - getHeight(node.getRightNode());
+
+        return bf;
+    }
+
+
+    public void addNode(Node toAdd) {
+
+        if (root == null) {
+            root = toAdd;
+        } else {
+            addNode(root, toAdd);
+        }
+    }
+
+    public void addNode(Node aux, Node toAdd) {
+
+        if (toAdd.getData() > aux.getData()) {
+
+            if (aux.rightNode == null) {
+
+                aux.rightNode = toAdd;
+                toAdd.setDadNode(aux);
+
+            } else {
+
+                addNode(aux.rightNode, toAdd);
+            }
+
+        } else {
+            if (aux.leftNode == null) {
+                aux.leftNode = toAdd;
+                toAdd.setDadNode(aux);
+            } else 
+                addNode(aux.leftNode, toAdd);
+        }
+
+        // Desempilhamento da recursão.
+        // Atualiza o fator de balanceamento.
+        aux.setBF(calculateBF(aux));
+
+        Node nodeA;
+        Node nodeB;
+
+        // Verifica se o nó ficou desbalanceado
+        if (aux.getBF() == -2 || aux.getBF() == 2) {
+
+            nodeA = aux;
+
+            if (nodeA.getBF() == -2) {
+
+                nodeB = nodeA.getRightNode();
+
+                // RR
+                if (nodeB.getBF() == -1) {
+                    System.out.println("RotationRR");
+                    RotationRR(nodeA, nodeB);
+                }
+
+                // RL
+                else if (nodeB.getBF() == 1) {
+                    System.out.println("RotationRL");
+                    RotationRL(nodeA, nodeB);
+                }
+            }
+
+            else {
+                nodeB = nodeA.getLeftNode();
+                // LL
+                if (nodeB.getBF() == 1) {
+                    System.out.println("RotationLL");
+                    RotationLL(nodeA, nodeB);
+                }
+
+                // LR
+                else if (nodeB.getBF() == -1) {
+                    System.out.println("RotationLR");
+                    RotationLR(nodeA, nodeB);
+                }
+            }
+        }
+    }
+
+    public void RotationRR(Node nodeA, Node nodeB) {
+
+        Node dad = nodeA.dadNode;
+        Node aux = nodeB.leftNode;
+
+        // B ocupa o lugar que A ocupava
+        if (dad == null) { //é a raiz
+            root = nodeB;
+        } else if (dad.leftNode == nodeA) {
+            dad.leftNode = nodeB;
+        } else 
+            dad.rightNode = nodeB;
+      
+        // Atualiza pai de B
+        nodeB.dadNode = dad;
+
+        // A passa a ser filho esquerdo de B
+        nodeB.leftNode = nodeA;
+        nodeA.dadNode = nodeB;
+
+        // Subárvore intermediária
+        nodeA.rightNode = aux;
+
+        if (aux != null) {
+            aux.dadNode = nodeA;
+        }
+
+        // Atualiza fatores
+        nodeA.setBF(calculateBF(nodeA));
+        nodeB.setBF(calculateBF(nodeB));
+    }
+
+    public void RotationLL(Node nodeA, Node nodeB) {
+
+        Node dad = nodeA.dadNode;
+        Node aux = nodeB.rightNode;
+
+        // B ocupa o lugar que A ocupava
+        if (dad == null) {
+            root = nodeB;
+        } else if (dad.leftNode == nodeA) {
+            dad.leftNode = nodeB;
+        } else {
+            dad.rightNode = nodeB;
+        }
+
+        // Atualiza pai de B
+        nodeB.dadNode = dad;
+
+        // A passa a ser filho direito de B
+        nodeB.rightNode = nodeA;
+        nodeA.dadNode = nodeB;
+
+        // Subárvore intermediária
+        nodeA.leftNode = aux;
+
+        if (aux != null) {
+            aux.dadNode = nodeA;
+        }
+
+        // Atualiza fatores
+        nodeA.setBF(calculateBF(nodeA));
+        nodeB.setBF(calculateBF(nodeB));
+    }
+
+    public void RotationLR(Node nodeA, Node nodeB) {
+
+        // B possui C à direita
+        Node nodeC = nodeB.rightNode;
+
+        // Primeiro RR em B
+        RotationRR(nodeB, nodeC);
+
+        // Depois LL em A
+        RotationLL(nodeA, nodeC);
+    }
+
+
+    public void RotationRL(Node nodeA, Node nodeB) {
+
+        // B possui C à esquerda
+        Node nodeC = nodeB.leftNode;
+
+        // Primeiro LL em B
+        RotationLL(nodeB, nodeC);
+
+        // Depois RR em A
+        RotationRR(nodeA, nodeC);
+    }
+
+    public void printPreOrder() {
+        printPreOrder(root);
+    }
+
+    public void printPreOrder(Node x) {
+
+        if (x == null)
+            return;
+
+        System.out.print(x.getData() + " ");
+
+        printPreOrder(x.getLeftNode());
+        printPreOrder(x.getRightNode());
+    }
+
+    public void listExternalNodes() {
+        listExternalNodes(root);
+    }
+
+    public void listExternalNodes(Node x) {
+
+        if (x == null)
+            return;
+
+        if (x.getLeftNode() == null &&
+            x.getRightNode() == null) {
+
+            System.out.print(x.getData() + " ");
+        }
+
+        listExternalNodes(x.getLeftNode());
+        listExternalNodes(x.getRightNode());
+    }
+
+    public void listInternalNodes() {
+        listInternalNodes(root);
+    }
+
+    public void listInternalNodes(Node x) {
+
+        if (x == null)
+            return;
+
+        if (x.getLeftNode() != null ||
+            x.getRightNode() != null) {
+
+            System.out.print(x.getData() + " ");
+        }
+
+        listInternalNodes(x.getLeftNode());
+        listInternalNodes(x.getRightNode());
+    }
+
+
+    public void delete(Node nodeToDelete) {
+
+        // Se tem dois filhos
+        if ((nodeToDelete.getLeftNode() != null) &&
+            (nodeToDelete.getRightNode() != null)) {
+
+            nodeToDelete.getLeftNode().rightNode =
+                    nodeToDelete.getRightNode();
+
+            if (nodeToDelete == root)
+                root = nodeToDelete.getLeftNode();
+        }
+
+        // Se possui apenas um filho
+        if ((nodeToDelete.getLeftNode() == null &&
+             nodeToDelete.getRightNode() != null)
+                ||
+            (nodeToDelete.getRightNode() == null &&
+             nodeToDelete.getLeftNode() != null)) {
+
+            Node child;
+
+            if (nodeToDelete.getLeftNode() != null) {
+
+                child = nodeToDelete.getLeftNode();
+                nodeToDelete.dadNode.leftNode = child;
+
+            } else {
+
+                System.out.println(
+                    "Caiu aqui apagando " +
+                    nodeToDelete +
+                    " pai dele é " +
+                    nodeToDelete.dadNode
+                );
+
+                child = nodeToDelete.getRightNode();
+
+                nodeToDelete.dadNode.rightNode = child;
+
+                System.out.println(child);
+            }
+
+            // Apagando a raiz
+            if (nodeToDelete == root) {
+
+                child.dadNode = null;
+                root = child;
+
+                return;
+            }
+
+            return;
+        }
+
+        // Árvore com apenas um nó
+        if (nodeToDelete == root &&
+            root.isExternal()) {
+
+            root = null;
+
+            return;
+        }
+
+        // Nó folha
+        if (nodeToDelete.isExternal()) {
+
+            if (nodeToDelete.dadNode.getLeftNode()
+                    == nodeToDelete) {
+
+                nodeToDelete.dadNode.leftNode = null;
+
+            } else {
+
+                nodeToDelete.dadNode.rightNode = null;
+            }
+        }
+    }
+
+
+    public boolean search(int valueToSearch) {
+
+        return search(valueToSearch, root);
+    }
+
+    private boolean search(int valor, Node x) {
+
+        if (x == null)
+            return false;
+
+        if (valor == x.getData())
+            return true;
+
+        return valor < x.getData()
+                ? search(valor, x.getLeftNode())
+                : search(valor, x.getRightNode());
+    }
+
+    // =========================================================
+    // ÁRVORE BINÁRIA ESTRITA
+    // =========================================================
+
+    public boolean isStrictBinaryTree() {
+
+        return isStrictBinaryTree(root);
+    }
+
+    public boolean isStrictBinaryTree(Node x) {
+
+        if (x == null)
+            return true;
+
+        if ((x.getLeftNode() == null &&
+             x.getRightNode() != null)
+                ||
+            (x.getLeftNode() != null &&
+             x.getRightNode() == null)) {
+
+            return false;
+        }
+
+        return isStrictBinaryTree(x.getLeftNode())
+                && isStrictBinaryTree(x.getRightNode());
+    }
+
+    // =========================================================
+    // RAIZ
+    // =========================================================
+
+    public int getRoot() {
+
+        return root == null ? null : root.getData();
+    }
+
+    public int depth(Node x) {
+
+        if (x == root)
+            return 0;
+
+        return 1 + depth(x.dadNode);
+    }
+
+
+    public int getHeight() {
+
+        return getHeight(root);
+    }
+
+    public int getHeight(Node aux) {
+
+        if (aux == null) {
+            return -1;
+        }
+
+        return Math.max(
+                getHeight(aux.getLeftNode()),
+                getHeight(aux.getRightNode())
+        ) + 1;
+    }
+
+    public boolean isPerfectBalanced() {
+        return isPerfectBalanced(root);
+    }
+
+    public boolean isPerfectBalanced(Node v) {
+
+        if (v == null)
+            return true;
+
+        int bf = getSize(v.getLeftNode())
+                - getSize(v.getRightNode());
+
+        return Math.abs(bf) <= 1
+                && isPerfectBalanced(v.getLeftNode())
+                && isPerfectBalanced(v.getRightNode());
+    }
+
+
+    public boolean isBinarySearchTree() {
+
+        this.aux.clear();
+        printInOrder();
+        for (int i = 0; i < this.aux.size() - 1; i++) {
+
+            if (aux.get(i) > aux.get(i + 1)) {
+
+                this.aux.clear();
+
+                return false;
+            }
+        }
+
+        this.aux.clear();
+
+        return true;
+    }
+
+    public boolean isBalanced() {
+        return isBalanced(root);
+    }
+
+    public boolean isBalanced(Node v) {
+        if (v == null)
+            return true;
+
+        int bf = getHeight(v.getLeftNode())
+                - getHeight(v.getRightNode());
+
+        return Math.abs(bf) <= 1
+                && isBalanced(v.getLeftNode())
+                && isBalanced(v.getRightNode());
+    }
 }

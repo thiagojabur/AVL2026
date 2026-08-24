@@ -3,10 +3,10 @@ public class Node {
 	public int data, bf=0; 
 	Node dadNode, leftNode, rightNode;
 		
-	public int getBf() {
+	public int getBF() {
 		return bf;
 	}
-	public void setBf(int bf) {
+	public void setBF(int bf) {
 		this.bf = bf;
 	}
 	public Node getLeftNode() {

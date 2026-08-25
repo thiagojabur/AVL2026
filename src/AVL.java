@@ -75,40 +75,42 @@ public class AVL {
     public void addNode(Node aux, Node toAdd) {
 
         if (toAdd.getData() > aux.getData()) {
-
             if (aux.rightNode == null) {
-
-                aux.rightNode = toAdd;
+                //chegou numa folha
+            	aux.rightNode = toAdd;
                 toAdd.setDadNode(aux);
-
             } else {
-
+            	//não é folha, vai descer
                 addNode(aux.rightNode, toAdd);
             }
-
-        } else {
+        } else if (toAdd.getData() < aux.getData()) { //para esquerda
             if (aux.leftNode == null) {
                 aux.leftNode = toAdd;
                 toAdd.setDadNode(aux);
             } else 
                 addNode(aux.leftNode, toAdd);
+        } else { 
+        	System.out.println("Valor repetido não pode ser inserido.");
+        	return; 
         }
 
         // Desempilhamento da recursão.
         // Atualiza o fator de balanceamento.
         aux.setBF(calculateBF(aux));
 
+        //chama as rotações
         Node nodeA;
         Node nodeB;
 
         // Verifica se o nó ficou desbalanceado
         if (aux.getBF() == -2 || aux.getBF() == 2) {
 
-            nodeA = aux;
+            //descobriu o A
+        	nodeA = aux;
 
             if (nodeA.getBF() == -2) {
-
-                nodeB = nodeA.getRightNode();
+                //B está no lado direito
+            	nodeB = nodeA.getRightNode();
 
                 // RR
                 if (nodeB.getBF() == -1) {
@@ -325,6 +327,9 @@ public class AVL {
                 nodeToDelete.dadNode.rightNode = child;
 
                 System.out.println(child);
+                //atualizando BF de todos os pais
+                updateDadsBF(nodeToDelete.dadNode);
+            
             }
 
             // Apagando a raiz
@@ -350,19 +355,33 @@ public class AVL {
 
         // Nó folha
         if (nodeToDelete.isExternal()) {
-
+        	
             if (nodeToDelete.dadNode.getLeftNode()
                     == nodeToDelete) {
-
                 nodeToDelete.dadNode.leftNode = null;
-
             } else {
-
                 nodeToDelete.dadNode.rightNode = null;
             }
+            
+            //atualizando BF de todos os pais
+            updateDadsBF(nodeToDelete.dadNode);
+        
         }
     }
-
+    
+    public void updateDadsBF(Node dad) {
+    	//condição de parada 
+    	if (dad == null)
+    		return;
+    	
+    	dad.setBF(calculateBF(dad));
+    	
+    	//chamar ela mesma 
+    	updateDadsBF(dad.getDadNode());
+    	
+    }	
+    
+    
 
     public boolean search(int valueToSearch) {
 

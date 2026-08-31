@@ -287,7 +287,6 @@ public class AVL {
 
 
     public void delete(Node nodeToDelete) {
-
         // Se tem dois filhos
         if ((nodeToDelete.getLeftNode() != null) &&
             (nodeToDelete.getRightNode() != null)) {
@@ -312,32 +311,19 @@ public class AVL {
 
                 child = nodeToDelete.getLeftNode();
                 nodeToDelete.dadNode.leftNode = child;
-
+                child.dadNode = nodeToDelete.dadNode;
+                updateDadsBF(nodeToDelete.dadNode);  
             } else {
-
-                System.out.println(
-                    "Caiu aqui apagando " +
-                    nodeToDelete +
-                    " pai dele é " +
-                    nodeToDelete.dadNode
-                );
-
                 child = nodeToDelete.getRightNode();
-
                 nodeToDelete.dadNode.rightNode = child;
-
-                System.out.println(child);
-                //atualizando BF de todos os pais
-                updateDadsBF(nodeToDelete.dadNode);
-            
+                child.dadNode = nodeToDelete.dadNode;
+                updateDadsBF(nodeToDelete.dadNode);            
             }
 
             // Apagando a raiz
             if (nodeToDelete == root) {
-
                 child.dadNode = null;
                 root = child;
-
                 return;
             }
 
@@ -347,20 +333,18 @@ public class AVL {
         // Árvore com apenas um nó
         if (nodeToDelete == root &&
             root.isExternal()) {
-
             root = null;
-
             return;
         }
 
         // Nó folha
         if (nodeToDelete.isExternal()) {
-        	
+        	System.out.println("Caiu aqui" + nodeToDelete );
             if (nodeToDelete.dadNode.getLeftNode()
                     == nodeToDelete) {
                 nodeToDelete.dadNode.leftNode = null;
             } else {
-                nodeToDelete.dadNode.rightNode = null;
+            	nodeToDelete.dadNode.rightNode = null;
             }
             
             //atualizando BF de todos os pais
@@ -401,9 +385,6 @@ public class AVL {
                 : search(valor, x.getRightNode());
     }
 
-    // =========================================================
-    // ÁRVORE BINÁRIA ESTRITA
-    // =========================================================
 
     public boolean isStrictBinaryTree() {
 

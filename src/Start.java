@@ -30,7 +30,12 @@ public class Start {
 		arvoreExemplo.addNode(setentaesete);
 		arvoreExemplo.delete(setentaesete);
 		arvoreExemplo.addNode(oitentaeum);
+		//delete oitenta que tem apenas um filho
 		arvoreExemplo.delete(oitenta);
+		//delete oitenta e um, que é folha
+		arvoreExemplo.delete(oitentaeum);
+		
+		
 		
 		System.out.println("\nNúmero de elementos: ");
 		System.out.println(arvoreExemplo.getSize());

@@ -28,14 +28,8 @@ public class Start {
 		arvoreExemplo.addNode(oitenta);
 		arvoreExemplo.addNode(setentaecinco);
 		arvoreExemplo.addNode(setentaesete);
-		arvoreExemplo.delete(setentaesete);
 		arvoreExemplo.addNode(oitentaeum);
-		//delete oitenta que tem apenas um filho
-		arvoreExemplo.delete(oitenta);
-		//delete oitenta e um, que é folha
-		arvoreExemplo.delete(oitentaeum);
-		
-		
+				
 		
 		System.out.println("\nNúmero de elementos: ");
 		System.out.println(arvoreExemplo.getSize());
@@ -46,5 +40,11 @@ public class Start {
 		System.out.println("\nBF(75) = " + setentaecinco.bf);
 
 		System.out.println("Árvore está balanceada? " + arvoreExemplo.isBalanced());
+		System.out.println(arvoreExemplo.getSuccessor(oitentaeum));
+	
+		arvoreExemplo.delete(setentaecinco);
+		arvoreExemplo.printInOrder();
+		arvoreExemplo.delete(sessenta);
+		arvoreExemplo.printInOrder();
 	}
 }

@@ -285,17 +285,48 @@ public class AVL {
         listInternalNodes(x.getRightNode());
     }
 
+    public Node findMin(Node node) {
+    	//condição de parada
+    	if (node.getLeftNode() == null)
+    		return node;
+    	
+    	//chamar ela mesma
+    	return findMin(node.getLeftNode());
+    }
+    
+    
+    //o node mais a esquerda do lado direito
+    public Node getSuccessor(Node node) {
+    	if (node.getRightNode() != null) 
+    		return findMin(node.getRightNode());
+    	else {
+    			  Node p = node.getDadNode(), T = node;
+    			  while (p != null && T == p.getRightNode()) {
+    			    T = p; 
+    			    p = T.getDadNode();
+    			  }  
 
+    			  if (p == null) 
+    				  return node;
+    			  else return p;
+    	}		  
+    }
+    
+    //não está recursiva 
     public void delete(Node nodeToDelete) {
         // Se tem dois filhos
         if ((nodeToDelete.getLeftNode() != null) &&
             (nodeToDelete.getRightNode() != null)) {
-
-            nodeToDelete.getLeftNode().rightNode =
-                    nodeToDelete.getRightNode();
-
-            if (nodeToDelete == root)
-                root = nodeToDelete.getLeftNode();
+        	Node successor = getSuccessor(nodeToDelete);
+        	System.out.println("tem que subir o " + successor);
+        	
+        	//pai do toDelete tem que ligar no successor
+        	nodeToDelete.dadNode.rightNode = successor;
+        	successor.dadNode.leftNode = null;
+        	successor.dadNode = nodeToDelete.dadNode;
+        	successor.leftNode = nodeToDelete.leftNode;
+        	successor.rightNode = nodeToDelete.rightNode;
+        	
         }
 
         // Se possui apenas um filho
